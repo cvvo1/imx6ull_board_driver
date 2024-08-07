@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"bsp_led.h": "c",
+			"bsp_delay.h": "c",
+			"main.h": "c",
+			"fsl_common.h": "c"
+		}
+	}
+}

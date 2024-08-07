@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"time.h": "c",
+			"bsp_i2c.h": "c"
+		}
+	}
+}

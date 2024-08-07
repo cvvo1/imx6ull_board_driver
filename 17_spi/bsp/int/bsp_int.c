@@ -1,0 +1,95 @@
+#include "bsp_int.h"
+
+/* 中断嵌套计数器 */
+static unsigned int irqNesting;
+
+/*中断处理函数表，定义全局变量*/
+static sys_irq_handle_t irqTable[NUMBER_OF_INT_VECTORS];   
+
+
+/* 
+ * @description	: 中断初始化函数
+ * @param		: 无
+ * @return 		: 无
+*/
+void int_Init(void)
+{
+    /*初始化GIC*/
+    GIC_Init();
+    system_irqtable_Init();
+
+    /*中断向量偏移设置*/
+    __set_VBAR((uint32_t)0x87800000);
+}
+
+
+/*
+ * @description	: 初始化中断服务函数表 
+ * @param		: 无
+ * @return 		: 无
+*/
+void system_irqtable_Init(void)
+{
+    uint32_t i=0;
+    irqNesting=0;
+    for(i=0;i<NUMBER_OF_INT_VECTORS;i++)
+    {
+        // irqTable[i].irqHandler=default_irqhandler;
+        // irqTable[i].userParam=NULL;
+
+        system_register_irqhandler((IRQn_Type)i,default_irqhandler, NULL);
+    }
+}
+
+/*
+ * @description			: 给指定的中断号注册中断服务函数 
+ * @param - irq			: 要注册的中断号
+ * @param - handler		: 要注册的中断处理函数
+ * @param - usrParam	: 中断服务处理函数参数
+ * @return 				: 无
+*/
+void system_register_irqhandler(IRQn_Type irq, system_irq_handler_t handler, void *userParam)
+{
+    irqTable[irq].irqHandler = handler;
+    irqTable[irq].userParam = userParam;
+}
+
+/*
+ * @description			: C语言中断服务函数，irq汇编中断服务函数会
+ 						  调用此函数，此函数通过在中断服务列表中查
+ 						  找指定中断号所对应的中断处理函数并执行。
+ * @param - giccIar		: 中断号
+ * @return 				: 无
+*/
+void system_irqhandler(unsigned int gicciar)
+{
+    /*检查中断ID是否正常，bit9～0位代表所有的中断ID*/
+    uint32_t intNum=gicciar & 0x3ffUL;   /*得到bit9～0位的中断ID*/
+
+     /* 检查中断号是否符合要求 */
+    if ((intNum == 1023) || (intNum >= NUMBER_OF_INT_VECTORS))
+    {
+	 	return;    /*不满足要求，跳出函数*/
+    }
+
+    irqNesting++;	/* 中断嵌套计数器加一 */
+   /*根据中断ID号，读取中断处理函数，然后执行*/
+    irqTable[intNum].irqHandler(intNum,irqTable[intNum].userParam);
+    irqNesting--;	/* 中断执行完成，中断嵌套寄存器减一 */
+   
+}
+
+/*
+ * @description			: 默认中断服务函数
+ * @param - giccIar		: 中断号
+ * @param - usrParam	: 中断服务处理函数参数
+ * @return 				: 无
+*/
+ void default_irqhandler(unsigned int gicciar, void *userParam)
+ {
+     while(1)
+     {
+
+     }
+
+ }

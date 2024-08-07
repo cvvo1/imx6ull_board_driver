@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"fsl_common.h": "c",
+			"fsl_iomuxc.h": "c"
+		}
+	}
+}

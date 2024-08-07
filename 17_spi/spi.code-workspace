@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"bsp_spi.h": "c",
+			"bsp_gpio.h": "c",
+			"imx6ul.h": "c",
+			"cc.h": "c"
+		}
+	}
+}
